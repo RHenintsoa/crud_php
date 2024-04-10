@@ -1,7 +1,7 @@
 [
     {
-        "name": "MISSY",
-        "firstname": "COOPER",
+        "name": "MISSIA",
+        "firstname": "HERTIE",
         "profession": "STUDENT"
     },
     {
@@ -23,5 +23,20 @@
         "name": "DEIREK",
         "firstname": "SHEIPERD",
         "profession": "NEURO"
+    },
+    {
+        "name": "HUNT",
+        "firstname": "OWEN",
+        "profession": "TITULAIRE"
+    },
+    {
+        "name": "HUNT",
+        "firstname": "MEGANE",
+        "profession": "NURSE"
+    },
+    {
+        "name": "SHAUN",
+        "firstname": "MURPHY",
+        "profession": "DOCTOR"
     }
 ]

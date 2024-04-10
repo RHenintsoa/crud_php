@@ -22,9 +22,9 @@ while (true) {
         case 'SEARCH':
             search();
             break;
-        case 'MODIFY':
-            modifyUser();
-            break;
+        // case 'MODIFY':
+        //     modifyUser();
+        //     break;
         case 'DELETE':
             deleteUser();
             break;    
@@ -43,8 +43,8 @@ function showHelp() {
     echo "- LIST : Afficher la liste des utilisateurs\n";
     echo "- ADD : Ajouter un nouvel utilisateur\n";
     echo "- SEARCH : Effectuer une recherche \n";
-    echo "- MODIFY : Effectuer une modification \n";
     echo "- DELETE : Sipprimer un utulisateur";
+    echo "- Si vous souhaitez modifier, veuillez taper la commande LIST puis MODIFY \n";
     echo "- exit : Quitter\n";
 }
 
@@ -64,17 +64,24 @@ function addUser() {
 }
 // Fonction pour afficher la liste des utilisateurs
 function listUsers() {
-
     foreach ($GLOBALS['lists'] as $list){ /* Récupérer les listes dans le json file pour pouvoir les afficher*/
-        echo "Nom : ". $list->name.PHP_EOL;
-        echo "Prénom : ". $list->firstname.PHP_EOL;
-        echo "Profession : ". $list->profession.PHP_EOL;
+        echo "Nom : ".$list->name.PHP_EOL;
+        echo "Prénom : ".$list->firstname.PHP_EOL;
+        echo "Profession : ".$list->profession.PHP_EOL;
         echo PHP_EOL; 
     }
     echo "Si vous souhaitez modifier une ligne, veuillez taper la commande MODIFY".PHP_EOL;
+    $modify = readline ('');
+    if($modify == 'MODIFY'){
+        modifyUser();
+    }else {
+        return;
+    }
 }
 function modifyUser(){
     $nameToModify = readline('Veuillez entrer le nom correspondant à la ligne que vous sohaitez modifier : ');
+    var_dump($nameToModify);
+    return;
     foreach ($GLOBALS['lists'] as $list){
         if ($nameToModify !="" && $nameToModify==$list->name) {
         echo "Nom : ".$list->name.PHP_EOL;
@@ -89,31 +96,41 @@ function modifyUser(){
         $list->name = $updateData['name'];
         $list->firstname = $updateData['firstname'];
         $list->profession = $updateData['profession'];
-        $updateData = json_encode($GLOBALS['lists'],JSON_PRETTY_PRINT);
-        file_put_contents('list.json',$updateData);
-        echo "Modification utilisateur ajouté avec succès".PHP_EOL;
+        // $updateData = json_encode($GLOBALS['lists'],JSON_PRETTY_PRINT);
+        // file_put_contents('list.json',$updateData);
+        // echo "Modification utilisateur ajouté avec succès".PHP_EOL;
+        // return;
+        var_dump($updateData);
     } 
+    else{
+        echo $nameToModify." n'existe pas".PHP_EOL;
+        return;
+    }
+}
+}
+// Fonction recherche
+function search() {
+    $keyword = readline("Entrez le nom de la personne : ");/* mot clé à rechercher*/
+    $results = []; /*tableau pour stocker les résultats mais on réinitialise en vide*/
+    foreach ($GLOBALS['lists'] as $list) {
+        if ($keyword !== "" && $keyword === $list->name) {
+            // Ajouter le résultat trouvé au tableau des résultats
+            $results[] = $list;
+        }
+    }
+    if (count($results) > 0) {
+        // Afficher tous les résultats trouvés
+        foreach ($results as $result) {
+            echo "Nom : " . $result->name . PHP_EOL;
+            echo "Prénom : " . $result->firstname . PHP_EOL;
+            echo "Profession : " . $result->profession . PHP_EOL;
+            echo PHP_EOL;
+        }
+    } else {
+        echo "Le nom " . $keyword . " que vous cherchez n'existe pas" . PHP_EOL;
+    }
 }
 
-}
-// fonction pour modifier user
-    
-// fonction recherche
-function search(){
-    // déclaration du mot clé recherché
-    $keyword = readline("Entrez le nom de la personne : ");
-   
-    foreach(($GLOBALS['lists'])as $list){    
-        if ($keyword !="" && $keyword==$list->name) {
-            echo "Nom : ".$list->name.PHP_EOL;
-            echo "Prénom : ".$list->firstname.PHP_EOL;
-            echo "Profession : ".$list->profession.PHP_EOL;
-            echo PHP_EOL;
-           return;    
-        } 
-    }
-    echo "Le nom " . $keyword . " que vous cherchez n'existe pas" . PHP_EOL;
-} 
 // Fonction delete
 function deleteUser(){
     $nameToDelete = readline('veuillez entrer le nom que vous souhaiteriez supprimer de la liste : ');
