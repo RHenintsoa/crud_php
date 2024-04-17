@@ -1,8 +1,6 @@
 <?php
 // récupération des données json
 $lists= json_decode(file_get_contents('list.json'));
-
-
 // Boucle infinie pour attendre les commandes de l'utilisateur
 while (true) {
     // Demander à l'utilisateur d'entrer une commande
@@ -37,7 +35,7 @@ while (true) {
     }
 }
 
-// Fonction pour afficher la liste des actions possibles
+/// Fonction pour afficher la liste des actions possibles
 function showHelp() {
     echo "Actions disponibles :\n";
     echo "- LIST : Afficher la liste des utilisateurs\n";
@@ -47,16 +45,43 @@ function showHelp() {
     echo "- Si vous souhaitez modifier, veuillez taper la commande LIST puis MODIFY \n";
     echo "- exit : Quitter\n";
 }
-
+/// Fonction réutilisable pour affichage des informations d'un utilisateur
+function affichage($user, $display_Eol=false){
+    echo "Nom : ".$user->name.PHP_EOL;
+    echo "Prénom : ".$user->firstname.PHP_EOL;
+    echo "Profession : ".$user->profession.PHP_EOL;
+    if($display_Eol){
+        echo PHP_EOL;
+    }
+}
+///Fonction réutilisable pour ajouter des informations
+function dataUser(){
+    $name = readline('NAME : ');
+    $firstname = readline('FIRSTNAME : ');
+    $profession = readline('PROFESSION : ');
+    $birthdate = readline('DATE OF BIRTH (YYYY-MM-DD) : ');
+    if (strtotime($birthdate) === false) {
+        echo "Date de naissance invalide. Veuillez entrer une date au format YYYY-MM-DD.";
+        return;
+    }
+    $formatted_birthdate = date('Y-m-d', strtotime($birthdate));
+   $newUser =[
+        'name'=> $name,
+        'firstname' => $firstname,
+        'profession' =>$profession,
+        'birthdate' =>$birthdate
+    ];
+    return $newUser;
+}
 
 // Fonction pour ajouter un nouvel utilisateur
 function addUser() {
     echo "ajout d'un nouvel membre en cours...\n";
-    $newUser =[
-            'name'=> readline('NAME : '),
-            'firstname' =>readline('FIRSTNAME : '),
-            'profession' =>readline('PROFESSION : ')
-    ];
+    $newUser = dataUser();
+    if ($newUser === null) {
+        echo "Arrêter l'ajout si les données de l'utilisateur sont invalides".PHP_EOL;
+        return;
+    }
     $GLOBALS['lists'][] = $newUser;
     $newList = json_encode($GLOBALS['lists'],JSON_PRETTY_PRINT);
     file_put_contents('list.json',$newList);
@@ -65,12 +90,9 @@ function addUser() {
 // Fonction pour afficher la liste des utilisateurs
 function listUsers() {
     foreach ($GLOBALS['lists'] as $list){ /* Récupérer les listes dans le json file pour pouvoir les afficher*/
-        echo "Nom : ".$list->name.PHP_EOL;
-        echo "Prénom : ".$list->firstname.PHP_EOL;
-        echo "Profession : ".$list->profession.PHP_EOL;
-        echo PHP_EOL; 
+        affichage($list,true);
     }
-    echo "Si vous souhaitez modifier une ligne, veuillez taper la commande MODIFY".PHP_EOL;
+    echo "Souhaiteriez-vous modifier une ligne, si OUI veuillez taper la commande MODIFY, sinon taper juste NON".PHP_EOL;
     $modify = readline ('');
     if($modify == 'MODIFY'){
         modifyUser();
@@ -79,15 +101,13 @@ function listUsers() {
     }
 }
 function modifyUser(){
-    $nameToModify = readline('Veuillez entrer le nom correspondant à la ligne que vous sohaitez modifier : ');
-    var_dump($nameToModify);
-    return;
+    $nameToModify = readline('Veuillez entrer le nom correspondant à la ligne que vous sohaitez modifier : ');   
+    $foundToModify = false;
     foreach ($GLOBALS['lists'] as $list){
-        if ($nameToModify !="" && $nameToModify==$list->name) {
-        echo "Nom : ".$list->name.PHP_EOL;
-        echo "Prénom : ".$list->firstname.PHP_EOL;
-        echo "Profession : ".$list->profession.PHP_EOL;
-        echo PHP_EOL;
+        if ($nameToModify !="" && $nameToModify===$list->name) {
+        $foundToModify = true;
+        affichage($list);
+        echo'Veuillez entrer les nouvelles informations'.PHP_EOL;    
         $updateData =[
             'name'=> readline('Nom : '),
             'firstname' =>readline('Prénom : '),
@@ -96,17 +116,17 @@ function modifyUser(){
         $list->name = $updateData['name'];
         $list->firstname = $updateData['firstname'];
         $list->profession = $updateData['profession'];
-        // $updateData = json_encode($GLOBALS['lists'],JSON_PRETTY_PRINT);
-        // file_put_contents('list.json',$updateData);
-        // echo "Modification utilisateur ajouté avec succès".PHP_EOL;
-        // return;
-        var_dump($updateData);
-    } 
-    else{
-        echo $nameToModify." n'existe pas".PHP_EOL;
+        $updateData = json_encode($GLOBALS['lists'],JSON_PRETTY_PRINT);
+        file_put_contents('list.json',$updateData);
+        echo "Modification utilisateur ajouté avec succès".PHP_EOL;
         return;
+        // var_dump($updateData);
+        }
     }
-}
+    if($foundToModify){
+        echo $nameToModify . " n'existe pas" . PHP_EOL;
+    }
+    
 }
 // Fonction recherche
 function search() {
@@ -121,10 +141,7 @@ function search() {
     if (count($results) > 0) {
         // Afficher tous les résultats trouvés
         foreach ($results as $result) {
-            echo "Nom : " . $result->name . PHP_EOL;
-            echo "Prénom : " . $result->firstname . PHP_EOL;
-            echo "Profession : " . $result->profession . PHP_EOL;
-            echo PHP_EOL;
+            affichage($result);
         }
     } else {
         echo "Le nom " . $keyword . " que vous cherchez n'existe pas" . PHP_EOL;
@@ -135,10 +152,9 @@ function search() {
 function deleteUser(){
     $nameToDelete = readline('veuillez entrer le nom que vous souhaiteriez supprimer de la liste : ');
     foreach ($GLOBALS['lists'] as $key=>$list){
-        if ($nameToDelete!="" && $nameToDelete==$list->name) {
-            echo "Nom : ".$list->name.PHP_EOL;
-            echo "Prénom : ".$list->firstname.PHP_EOL;
-            echo "Profession : ".$list->profession.PHP_EOL;
+        if ($nameToDelete!="" && $nameToDelete===$list->name) {
+            affichage($list, true);
+            
             echo "Vous voulez supprimer définitivement ?";
             $reponse = readline('');
             if ($reponse == 'OUI'){

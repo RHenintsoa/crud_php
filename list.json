@@ -1,42 +1,8 @@
 [
     {
-        "name": "MISSIA",
-        "firstname": "HERTIE",
-        "profession": "STUDENT"
-    },
-    {
-        "name": "MIRANDA",
-        "firstname": "BAILAY",
-        "profession": "CHEF"
-    },
-    {
-        "name": "AMELIA",
-        "firstname": "SHEIPERD",
-        "profession": "NEURO"
-    },
-    {
         "name": "MARK",
         "firstname": "SLOAN",
-        "profession": "DOCTOR"
-    },
-    {
-        "name": "DEIREK",
-        "firstname": "SHEIPERD",
-        "profession": "NEURO"
-    },
-    {
-        "name": "HUNT",
-        "firstname": "OWEN",
-        "profession": "TITULAIRE"
-    },
-    {
-        "name": "HUNT",
-        "firstname": "MEGANE",
-        "profession": "NURSE"
-    },
-    {
-        "name": "SHAUN",
-        "firstname": "MURPHY",
-        "profession": "DOCTOR"
+        "profession": "DENTIST",
+        "birthdate": "2020-06-12"
     }
 ]
