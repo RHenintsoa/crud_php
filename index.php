@@ -25,7 +25,10 @@ while (true) {
         //     break;
         case 'DELETE':
             deleteUser();
-            break;    
+            break;  
+        case'DATE';
+            filterDate();
+            break;
         case 'exit':
             echo "A la prochaine fois !\n";
             exit; // Quitter l'application
@@ -111,7 +114,8 @@ function modifyUser(){
         $updateData =[
             'name'=> readline('Nom : '),
             'firstname' =>readline('Prénom : '),
-            'profession' =>readline('Profession : ')
+            'profession' =>readline('Profession : '),
+            'birthdate' =>readline('Date de naissance : ')
             ];   
         $list->name = $updateData['name'];
         $list->firstname = $updateData['firstname'];
@@ -120,7 +124,6 @@ function modifyUser(){
         file_put_contents('list.json',$updateData);
         echo "Modification utilisateur ajouté avec succès".PHP_EOL;
         return;
-        // var_dump($updateData);
         }
     }
     if($foundToModify){
@@ -168,4 +171,26 @@ function deleteUser(){
         } 
     }
 }
+//$dateStart,$dateEnd
+function filterDate(){
+    $dateStart = readline('Veuillez entrer le début de la date en format YYY-MM-DD');
+    $dateEnd = readline('Veuillez entrer le début de la date en format YYY-MM-DD');
+    $resultDates=[];
+    foreach($GLOBALS['lists'] as $list){
+        $dateSearch = $list->birthdate;
+        // var_dump($dateSearch);
+        if($dateStart<= $dateSearch && $dateSearch<=$dateEnd){
+            $resultDates[]= $list;
+        }
+    }
+    if(count($resultDates>0)){
+        foreach($resultDates as $resultDate){
+            affichage($resultDate);
+        }
+    }else{
+        echo'aucune date correspondante';
+    }
+
+}
+filterDate();
 ?>
